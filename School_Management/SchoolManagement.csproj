@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\SchoolManagement.domain\SchoolManagement.domain.csproj" />
     <ProjectReference Include="..\SchoolManagement.persistent\SchoolManagement.persistent.csproj" />
   </ItemGroup>
 

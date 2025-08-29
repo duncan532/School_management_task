@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolManagement.domain;
+using SchoolManagement.domain.school_mgt;
+using SchoolManagement.domain.user;
 
 namespace SchoolManagement.persistent
 {
@@ -14,9 +15,10 @@ namespace SchoolManagement.persistent
 
             base.OnModelCreating(modelBuilder);
         }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
-        }
-
+        public DbSet<Classroom> Classrooms { get; set; }
+        public DbSet<Grade> Grades { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set; }
+    }
     }

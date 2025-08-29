@@ -1,4 +1,4 @@
-﻿namespace SchoolManagement.domain
+﻿namespace SchoolManagement.domain.user
 {
     public enum Status
     {

@@ -22,7 +22,7 @@ namespace SchoolManagement.persistent.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SchoolManagement.domain.Classroom", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Classroom", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,21 +43,19 @@ namespace SchoolManagement.persistent.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("TeacherId")
+                        .IsUnique();
 
-                    b.ToTable("Classroom");
+                    b.ToTable("Classrooms");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Course", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClassroomId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -70,14 +68,12 @@ namespace SchoolManagement.persistent.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassroomId");
-
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Enrollment", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Enrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,10 +93,10 @@ namespace SchoolManagement.persistent.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Enrollment");
+                    b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Grade", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Grade", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -122,7 +118,7 @@ namespace SchoolManagement.persistent.Migrations
                     b.ToTable("Grade");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Student", b =>
+            modelBuilder.Entity("SchoolManagement.domain.user.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -133,8 +129,12 @@ namespace SchoolManagement.persistent.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClassroomId")
-                        .HasColumnType("int");
+                    b.Property<string>("ClassroomId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Firstname")
                         .IsRequired()
@@ -148,82 +148,46 @@ namespace SchoolManagement.persistent.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("Role")
                         .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("SchoolManagement.domain.Teacher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Firstname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Classroom", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Classroom", b =>
                 {
-                    b.HasOne("SchoolManagement.domain.Teacher", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
+                    b.HasOne("SchoolManagement.domain.user.User", "Teacher")
+                        .WithOne("Classroom")
+                        .HasForeignKey("SchoolManagement.domain.school_mgt.Classroom", "TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Course", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Course", b =>
                 {
-                    b.HasOne("SchoolManagement.domain.Classroom", "Classroom")
+                    b.HasOne("SchoolManagement.domain.user.User", "Teacher")
                         .WithMany("Courses")
-                        .HasForeignKey("ClassroomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolManagement.domain.Teacher", "Teacher")
-                        .WithMany()
                         .HasForeignKey("TeacherId");
 
-                    b.Navigation("Classroom");
-
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Enrollment", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Enrollment", b =>
                 {
-                    b.HasOne("SchoolManagement.domain.Course", "Course")
+                    b.HasOne("SchoolManagement.domain.school_mgt.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SchoolManagement.domain.Student", "Student")
+                    b.HasOne("SchoolManagement.domain.user.User", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -234,34 +198,33 @@ namespace SchoolManagement.persistent.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Grade", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Grade", b =>
                 {
-                    b.HasOne("SchoolManagement.domain.Enrollment", "Enrollment")
+                    b.HasOne("SchoolManagement.domain.school_mgt.Enrollment", "Enrollment")
                         .WithOne("Grade")
-                        .HasForeignKey("SchoolManagement.domain.Grade", "EnrollmentId")
+                        .HasForeignKey("SchoolManagement.domain.school_mgt.Grade", "EnrollmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Enrollment");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Classroom", b =>
-                {
-                    b.Navigation("Courses");
-                });
-
-            modelBuilder.Entity("SchoolManagement.domain.Course", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Course", b =>
                 {
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Enrollment", b =>
+            modelBuilder.Entity("SchoolManagement.domain.school_mgt.Enrollment", b =>
                 {
                     b.Navigation("Grade");
                 });
 
-            modelBuilder.Entity("SchoolManagement.domain.Student", b =>
+            modelBuilder.Entity("SchoolManagement.domain.user.User", b =>
                 {
+                    b.Navigation("Classroom");
+
+                    b.Navigation("Courses");
+
                     b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618
